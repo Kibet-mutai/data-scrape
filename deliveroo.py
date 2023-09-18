@@ -1,3 +1,4 @@
+import re
 import time
 import pandas as pd
 from selenium import webdriver
@@ -70,23 +71,32 @@ class DeliverooScraper:
                 break
 
     def extract_restaurants(self):
-        restaurant_data = self.driver.find_elements(By.XPATH, '//li[@class="HomeFeedGrid-b0432362335be7af"]')
+        # restaurant_data = self.driver.find_elements(By.XPATH, '//li[@class="HomeFeedGrid-b0432362335be7af"]')
         restaurants = []
         names = self.driver.find_elements(By.XPATH, '//li[@class="HomeFeedUILines-8bd2eacc5b5ba98e"]/span/p')
         try:
             radius_elements = self.driver.find_elements(By.XPATH, '//li[@class="HomeFeedUILines-55cd19148e4c15d6"]/span/span[contains(@class, "ccl-649204f2a8e630fd")]')
         except:
-            print("No element found!``````````````````````````")
+            print("No element found!")
 
-        radius = [radius_text.text.strip() for radius_text in radius_elements] if radius_elements else 'NULL'
-        # print(radius[2])
         for i in range(len(names)):
             restaurant_name = names[i].text.strip()
             # print(restaurant_name)
+            radius = 'N/A'
+            reviews = 'N/A'
 
-            if restaurant_name and radius:
-                # print("Restaurant:", restaurant_name, "Radius:", radius)
-                restaurants.append({'RESTAURANT NAME': restaurant_name, 'RESTAURANT DELIVERY RADIUS': radius[2], 'RESTAURANT REVIEWS': radius[0]})
+            if i < len(radius_elements):
+                radius_data = radius_elements[i].text.strip()
+                # print(radius_data)
+                radius_match = re.search(r'([\d.]+)\s*miles away', radius_data)
+                if radius_match:
+                    radius = radius_match.group(1)
+
+            if any(word in radius_data for word in ['Good', 'Excellent', 'Bad']):
+                reviews_match = re.search(r'(\d+\.\d+)\s*(Good|Excellent|Bad)', radius_data)
+                if reviews_match:
+                    reviews = reviews_match.group(1)
+            restaurants.append({'RESTAURANT NAME': restaurant_name, 'RESTAURANT DELIVERY RADIUS': radius, 'RESTAURANT REVIEWS': reviews})
                 
         return restaurants
 
