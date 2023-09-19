@@ -1,3 +1,3 @@
 ## Description
 
-A script restaurants based websites.
+A script to scrape restaurants based websites.
