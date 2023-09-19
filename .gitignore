@@ -1,2 +1,4 @@
 scrape/
 
+.vscode
+scrapy/
