@@ -72,63 +72,25 @@ class DeliverooScraper:
             if screen_height * i > 10000:
                 break
 
-    
-    def extract_categories(self, restuarant_element):
-        restuarant_element.click()
-        time.sleep(4)
-        categories = []
-        category_elements = self.driver.find_elements(By.XPATH, '//div[@class="UILines-558487250abed979"]/span')
-        categories= [category.text.strip() for category in category_elements]
-
-        print(categories)
-
-        self.driver.back()
-        time.sleep(5)
-        return categories
-
-
-
     def extract_restaurants(self):
         restaurant_data = self.driver.find_elements(By.CLASS_NAME, 'HomeFeedUICard-cdbc09faf7465d96')
         restaurants = []
-        res_names = self.driver.find_elements(By.CSS_SELECTOR, 'p.ccl-649204f2a8e630fd.ccl-a396bc55704a9c8a.ccl-ff5caa8a6f2b96d0.ccl-40ad99f7b47f3781')
-
-        # for i in range(len(names)):
         for res_data in restaurant_data:
             postcode = self.postcode
             names = res_data.find_elements(By.CSS_SELECTOR, 'p.ccl-649204f2a8e630fd.ccl-a396bc55704a9c8a.ccl-ff5caa8a6f2b96d0.ccl-40ad99f7b47f3781')    # names[i].text.strip()
             restaurant_link = res_data.find_element(By.XPATH, './/a[@class="HomeFeedUICard-3e299003014c14f9"]').get_attribute('href')
-            # print(restaurant_link)
+             # Check if the restaurant is closed
+            is_closed = bool(res_data.find_elements(By.XPATH, './/span[@class="HomeFeedUICard-96eca7a3375b9f17 HomeFeedUICard-b26ae8114c844f49"]/span'))
+
             for name in names:
                 restaurant_name = name.text.strip()
-                # print(restaurant_name)
-            # radius = 'N/A'
-            # reviews = 'N/A'
-            # categories = []
-
-            # try:
-            #     radius_data = res_data.find_element(By.XPATH, './/li[@class="HomeFeedUILines-55cd19148e4c15d6"]/span').text.strip()
-            #     # for rad_element in radius_elements:
-            #     #     radius_data = rad_element.text.strip()
-            #     print(radius_data)
-            #     radius_match = re.search(r'([\d.]+)\s*miles|mile', radius_data)
-            #     if radius_match:
-            #         radius = radius_match.group(1)
-            #         # print(radius)
-
-            #     # if any(word in radius_data for word in ['Good', 'Excellent', 'Bad']):
-            #     #     reviews_match = re.search(r'(\d+\.\d+)\s*(Good|Excellent|Bad)', radius_data)
-            #     #     if reviews_match:
-            #     #         reviews = reviews_match.group(1)
-            # except:
-            #     print("No element containing reviews and radius")
-
-            # categories = self.extract_categories(restuarant_element=names[i])
+            
             restaurants.append({
                 'RESTAURANT POSTCODE': postcode,
                 'RESTAURANT NAME': restaurant_name,
-                'RESTUARANT LINK': restaurant_link
-                # 'CATEGORIES': categories
+                'RESTUARANT LINK': restaurant_link,
+                # 'IS OPEN': TODO
+                'IS CLOSED': is_closed
             })
                     
         return restaurants
@@ -150,7 +112,7 @@ if __name__ == "__main__":
     scraper = DeliverooScraper(path)
     postcode = 'NN16 9QY'
     df = scraper.run(postcode)
-    df.to_csv('deliverooptwt.csv', index=False)
+    df.to_csv('deliveroodata.csv', index=False)
 
 
 # map_button="ccl-364e2ed6a76f91e9"
