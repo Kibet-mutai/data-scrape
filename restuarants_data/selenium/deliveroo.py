@@ -51,6 +51,12 @@ class DeliverooScraper:
             terms.click()
         except:
             print('Cannot find the element to click')
+    def select_restuarant(self):
+        try:
+            restuarant = self.driver.find_element(By.XPATH, '//*[@id="home-feed-container"]/div/ul/li[1]/div/div/div/ul/li[1]/div/button')
+            restuarant.click()
+        except:
+            print('Cannot find element to click')
 
     def sort_by_distance(self):
         dropdown = self.driver.find_element(By.XPATH, '//*[@id="__next"]/div/div/div[3]/div/div/div[1]/div/div[1]/div/div[2]/div[1]/div/button')
@@ -100,7 +106,9 @@ class DeliverooScraper:
         self.start_driver()
         self.search_location(postcode)
         self.click_terms()
-        time.sleep(5)
+        time.sleep(3)
+        self.select_restuarant()
+        time.sleep(3)
         self.sort_by_distance()
         self.scroll_to_load_restaurants()
         restaurants = self.extract_restaurants()
@@ -110,7 +118,7 @@ class DeliverooScraper:
 if __name__ == "__main__":
     path = '/home/kibet/Downloads/chromedriver'
     scraper = DeliverooScraper(path)
-    postcode = 'EC1N 8NX'
+    postcode = 'NN16 9QY'
     df = scraper.run(postcode)
     df.to_csv('deliveroodata.csv', index=False)
 
