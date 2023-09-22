@@ -69,7 +69,7 @@ class DeliverooScraper:
             self.driver.execute_script("window.scrollTo(0, {0});".format(screen_height * i))
             time.sleep(scroll_pause_time)
             i += 1
-            if screen_height * i > 10000:
+            if screen_height * i > 14000:
                 break
 
     def extract_restaurants(self):
@@ -110,7 +110,7 @@ class DeliverooScraper:
 if __name__ == "__main__":
     path = '/home/kibet/Downloads/chromedriver'
     scraper = DeliverooScraper(path)
-    postcode = 'NN16 9QY'
+    postcode = 'EC1N 8NX'
     df = scraper.run(postcode)
     df.to_csv('deliveroodata.csv', index=False)
 
