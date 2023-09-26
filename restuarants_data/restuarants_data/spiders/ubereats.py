@@ -1,5 +1,5 @@
 import scrapy
-
+import pandas as pd
 
 class UbereatsSpider(scrapy.Spider):
     name = "ubereats"
